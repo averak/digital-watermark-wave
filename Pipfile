@@ -8,6 +8,7 @@ name = "pypi"
 [dev-packages]
 flake8 = "*"
 autopep8 = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.9"
@@ -15,3 +16,4 @@ python_version = "3.9"
 [scripts]
 format = "autopep8 -ivr ."
 lint = "flake8 --show-source ."
+mypy = "mypy ."
