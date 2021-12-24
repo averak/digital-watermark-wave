@@ -20,9 +20,12 @@ This app is digital watermaker for wave.
 $ pipenv install
 ```
 
-### Lint & Format
+### Code check & format
 
 ```bash
-$ pipenv run lint
+# code check
+$ pipenv run lint && pipenv run mypy
+
+# code format
 $ pipenv run format
 ```
