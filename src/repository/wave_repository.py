@@ -29,7 +29,7 @@ class WaveRepository:
 
         waves: list[WaveModel] = []
 
-        file_names: list[str] = glob.glob(f"{self.SAVE_PATH}/*.wav")
+        file_names: list[str] = glob.glob(f"{self.SAVE_PATH}/*.wav", recursive=True)
         for file_name in file_names:
             wave = self.get_by_filename(file_name)
             waves.append(wave)
@@ -91,6 +91,6 @@ class WaveRepository:
         音声データを全削除
         """
 
-        file_names: list[str] = glob.glob(f'{self.SAVE_PATH}/**/*.wav')
+        file_names: list[str] = glob.glob(f"{self.SAVE_PATH}/**/*.wav", recursive=True)
         for file_name in file_names:
             os.remove(file_name)
