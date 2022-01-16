@@ -1,7 +1,10 @@
 import os
 import time
 import glob
+import struct
 import wave as wave_io
+import numpy as np
+
 from model.wave_model import WaveModel
 from config.wave_config import WaveConfig
 

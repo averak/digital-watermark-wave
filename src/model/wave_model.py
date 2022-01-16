@@ -17,7 +17,7 @@ class WaveModel(BaseModel):
     音声の長さ[s]
     """
 
-    content: list[int]
+    content: bytes
     """
     音声データ
     """
