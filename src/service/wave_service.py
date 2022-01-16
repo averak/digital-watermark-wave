@@ -21,6 +21,7 @@ class WaveService:
         Enterを入力すると録音開始、再入力すると終了
         """
 
+        # TODO: Spaceキーを押すと録音開始、離すと終了
         print(MessageConfig.HOW_TO_START_RECORDING())
         input()
 
@@ -36,3 +37,4 @@ class WaveService:
         """
 
         self.wave_repository.delete_all()
+        print(MessageConfig.CLEAR_ALL_DATA())

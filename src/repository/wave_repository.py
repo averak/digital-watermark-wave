@@ -29,7 +29,7 @@ class WaveRepository:
 
         waves: list[WaveModel] = []
 
-        file_names: list[str] = glob.glob(f"{self.SAVE_PATH}/*.wav", recursive=True)
+        file_names: list[str] = glob.glob(f"{self.SAVE_PATH}/*.wav")
         for file_name in file_names:
             wave = self.get_by_filename(file_name)
             waves.append(wave)

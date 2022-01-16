@@ -32,3 +32,7 @@ class MessageConfig:
     @classmethod
     def SAVE_RECORDING(cls, file_name: str) -> str:
         return f"{cls.FontColors.YELLOW}{file_name}{cls.FontColors.RESET}に録音音声を保存しました。"
+
+    @classmethod
+    def CLEAR_ALL_DATA(cls) -> str:
+        return "音声データを全削除しました。"
