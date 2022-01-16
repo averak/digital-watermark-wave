@@ -1,7 +1,5 @@
-import struct
 import pyaudio
 import threading
-import numpy as np
 
 from config.wave_config import WaveConfig
 from config.message_config import MessageConfig
@@ -80,7 +78,7 @@ class WaveService:
         # 音声を保存
         wave_model: WaveModel = WaveModel(
             content=b''.join(wave_chunks),
-            length=len(wave_chunks) / WaveConfig.RATE
+            length=len(wave_chunks) * WaveConfig.CHUNK / WaveConfig.RATE
         )
         file_name: str = self.wave_repository.save(wave_model)
         print(MessageConfig.SAVE_RECORDING(file_name))
