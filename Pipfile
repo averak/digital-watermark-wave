@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 pydantic = "*"
 wave = "*"
+pyaudio = "*"
 
 [dev-packages]
 flake8 = "*"
