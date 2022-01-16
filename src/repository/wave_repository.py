@@ -20,21 +20,21 @@ class WaveRepository:
         # 存在しない場合、ディレクトリを作成
         os.makedirs(self.SAVE_PATH, exist_ok=True)
 
-    def findAll(self) -> list[WaveModel]:
+    def getAll(self) -> list[WaveModel]:
         """
         全ての音声を取得
         """
 
-        waves: list = []
+        waves: list[WaveModel] = []
 
         file_names: list[str] = glob.glob(f"{self.SAVE_PATH}/*.wav")
         for file_name in file_names:
-            wave_read = wave_io.open(file_name, 'rb')
-            wave_read.close()
+            wave = self.get_by_filename(file_name)
+            waves.append(wave)
 
         return waves
 
-    def find_by_filename(self, file_name: str) -> WaveModel:
+    def get_by_filename(self, file_name: str) -> WaveModel:
         """
         ファイル名から音声を取得
         """
