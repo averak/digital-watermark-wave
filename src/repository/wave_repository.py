@@ -80,7 +80,8 @@ class WaveRepository:
         """
 
         # {タイムスタンプ}_{サンプリングレート[Hz]}_{音声の長さ[s]}.wav
-        return "%d_%d_%2.1f.wav" % (
+        return "%s/%d_%d_%2.1f.wav" % (
+            self.SAVE_PATH,
             int(time.time()),
             wave.rate,
             wave.length
