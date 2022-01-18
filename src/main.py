@@ -20,6 +20,7 @@ arguments = argument_parser.parse_args()
 
 if arguments.record:
     wave_service.record_wave()
-
-if arguments.clear:
+elif arguments.clear:
     wave_service.clear_all_data()
+else:
+    argument_parser.print_help()
