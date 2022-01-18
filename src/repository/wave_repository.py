@@ -62,10 +62,10 @@ class WaveRepository:
         @return 保存したファイル名
         """
 
-        # NOTE: ファイル名を指定可能にしても良いかも
-        file_name: str = self.__generate_file_name(wave_model)
-        scipy.io.wavfile.write(file_name, wave_model.rate, np.array(wave_model.content, dtype=np.int16))
-        return file_name
+        if wave_model.file_name == '':
+            wave_model.file_name = self.__generate_file_name(wave_model)
+        scipy.io.wavfile.write(wave_model.file_name, wave_model.rate, np.array(wave_model.content, dtype=np.int16))
+        return wave_model.file_name
 
     def __generate_file_name(self, wave_model: WaveModel) -> str:
         """

@@ -13,6 +13,9 @@ argument_parser: argparse.ArgumentParser = argparse.ArgumentParser()
 argument_parser.add_argument('-s', '--steganography',
                              help='ステガノグラフィ',
                              action='store_true')
+argument_parser.add_argument('-d', '--detect',
+                             help='ステガノグラフィを検出',
+                             action='store_true')
 argument_parser.add_argument('-r', '--record',
                              help='音声を録音',
                              action='store_true')
@@ -23,6 +26,8 @@ arguments = argument_parser.parse_args()
 
 if arguments.steganography:
     wave_service.steganography()
+elif arguments.detect:
+    wave_service.detect_steganography()
 elif arguments.record:
     wave_service.record_wave()
 elif arguments.clear:

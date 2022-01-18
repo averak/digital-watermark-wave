@@ -1,3 +1,4 @@
+import os
 import pyaudio
 import threading
 import numpy as np
@@ -21,6 +22,11 @@ class WaveService:
     pyaudio_stream: pyaudio.Stream
     """
     ストリーミング音声処理機
+    """
+
+    STEGANOGRAPHY_PREFIX: str = "stegano-"
+    """
+    電子透かしを埋め込んだファイル名のプレフィックス
     """
 
     def __init__(self, wave_repository: WaveRepository):
@@ -101,33 +107,20 @@ class WaveService:
         https://tam5917.hatenablog.com/entry/2020/02/07/000644
         """
 
-        # ファイル一覧を表示
-        print(MessageConfig.SELECT_WAVE_FILE_TO_STEGANOGRAPHY())
-        wave_models = self.wave_repository.get_all()
-        for i, wave_model in enumerate(wave_models):
-            print(MessageConfig.WAVE_FILE_WITH_INDEX(i, wave_model.file_name))
-
         # ユーザが音声とメッセージを指定する
-        try:
-            print("")
-            print(MessageConfig.INPUT_WAVE_FILE_INDEX(0, len(wave_models) - 1), end="")
-            wave_model_index: int = int(input())
-            # インデックスが範囲を超えている場合はエラー
-            if (wave_model_index not in range(len(wave_models))):
-                raise Exception
-            wave_model: WaveModel = wave_models[wave_model_index]
-
-            print(MessageConfig.INPUT_MESSAGE(), end="")
-            message: str = input()
-            # メッセージが空の場合はエラー
-            if (message == ""):
-                raise Exception
-        except Exception:
+        # ステガノグラフィで生成されたものはフィルタリング
+        wave_models = list(filter(lambda wave_model: self.STEGANOGRAPHY_PREFIX not in os.path.basename(
+            wave_model.file_name), self.wave_repository.get_all()))
+        wave_model = self.__user_select_wave_file(wave_models)
+        print(MessageConfig.INPUT_MESSAGE(), end="")
+        message: str = input()
+        # メッセージが空の場合はエラー
+        if (message == ""):
             print(MessageConfig.VALIDATION_ERROR_OF_INPUT_TEXT())
             exit(1)
 
         print("")
-        print(MessageConfig.START_STEGANOGRAPHY())
+        print(MessageConfig.START_PROCESSING())
 
         # メッセージを"{文字数}:{メッセージ}"に加工する
         # 文字数が不明だと検出できないため
@@ -139,9 +132,65 @@ class WaveService:
         for i, bit in enumerate(message_bits):
             wave_model.content[i] = wave_model.content[i] & ~1 | int(bit)
 
-        print(MessageConfig.COMPLETE_STEGANOGRAPHY())
+        print(MessageConfig.COMPLETE_PROCESSING())
 
         # ファイルを保存
-        file_name: str = self.wave_repository.save(wave_model)
+        wave_model.file_name = f"{os.path.dirname(wave_model.file_name)}/{self.STEGANOGRAPHY_PREFIX}{os.path.basename(wave_model.file_name)}"
+        self.wave_repository.save(wave_model)
         print("")
-        print(MessageConfig.SAVE_WAVE_FILE(file_name))
+        print(MessageConfig.SAVE_WAVE_FILE(wave_model.file_name))
+
+    def detect_steganography(self):
+        """
+        ステガノグラフィを検出
+        """
+
+        # ユーザが音声とメッセージを指定する
+        # ステガノグラフィで生成されたもの以外はフィルタリング
+        print(MessageConfig.SELECT_WAVE_FILE())
+        wave_models = list(filter(lambda wave_model: self.STEGANOGRAPHY_PREFIX in os.path.basename(
+            wave_model.file_name), self.wave_repository.get_all()))
+        wave_model = self.__user_select_wave_file(wave_models)
+
+        # 各フレームの最下位ビットを繋げた文字列
+        wave_content_lsbs: str = "".join([bin(frame)[-1] for frame in wave_model.content])
+        # "{文字数}:{メッセージ}"のフォーマットからメッセージの長さを取得
+        # よりエレガントな方法がありそう
+        message_length: int = 0
+        for i in range(len(wave_content_lsbs) // 8):
+            # 取得した8bitのASCIIコードを取得
+            ascii_code: int = int(wave_content_lsbs[(i * 8):(i * 8 + 8)], 2)
+
+            # ":"ならループを抜ける
+            if ascii_code == 58:
+                break
+
+            bits_number: int = int(chr(ascii_code))
+            if message_length == 0:
+                message_length = bits_number
+            else:
+                message_length = message_length * 10 + bits_number
+
+        # メッセージブロックからメッセージを抽出
+        start_index: int = (len(str(message_length)) + 1) * 8
+        message_bits: str = wave_content_lsbs[start_index:(start_index + message_length * 8)]
+        message: str = "".join([chr(int(message_bits[(i * 8):((i + 1) * 8)], 2)) for i in range(len(message_bits) // 8)])
+        print("")
+        print(MessageConfig.DETECT_MESSAGE(message))
+
+    def __user_select_wave_file(self, wave_models: list[WaveModel]) -> WaveModel:
+        print(MessageConfig.SELECT_WAVE_FILE())
+        for i, wave_model in enumerate(wave_models):
+            print(MessageConfig.WAVE_FILE_WITH_INDEX(i, wave_model.file_name))
+
+        try:
+            print("")
+            print(MessageConfig.INPUT_WAVE_FILE_INDEX(0, len(wave_models) - 1), end="")
+            wave_model_index: int = int(input())
+            # インデックスが範囲を超えている場合はエラー
+            if (wave_model_index not in range(len(wave_models))):
+                raise Exception
+            return wave_models[wave_model_index]
+        except Exception:
+            print(MessageConfig.VALIDATION_ERROR_OF_INPUT_TEXT())
+            exit(1)
