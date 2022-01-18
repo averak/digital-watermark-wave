@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+
 from config.wave_config import WaveConfig
 
 
@@ -17,7 +18,7 @@ class WaveModel(BaseModel):
     音声の長さ[s]
     """
 
-    content: bytes
+    content: list[int]
     """
     音声データ
     """

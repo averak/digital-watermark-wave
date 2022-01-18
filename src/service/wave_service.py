@@ -1,5 +1,6 @@
 import pyaudio
 import threading
+import numpy as np
 
 from config.wave_config import WaveConfig
 from config.message_config import MessageConfig
@@ -45,7 +46,7 @@ class WaveService:
         start_recording: bool = False
         stop_recording: bool = False
 
-        wave_chunks: list[bytes] = []
+        wave_content: list[int] = []
 
         def async_record_wave():
             """
@@ -60,7 +61,7 @@ class WaveService:
             # 録音終了されるまで録音
             while not stop_recording:
                 chunk = self.stream.read(WaveConfig.CHUNK, exception_on_overflow=False)
-                wave_chunks.append(chunk)
+                wave_content.extend(np.frombuffer(chunk, dtype=np.int16))
 
         # 非同期でストリーミング
         thread: threading.Thread = threading.Thread(target=async_record_wave)
@@ -77,8 +78,8 @@ class WaveService:
 
         # 音声を保存
         wave_model: WaveModel = WaveModel(
-            content=b''.join(wave_chunks),
-            length=len(wave_chunks) * WaveConfig.CHUNK / WaveConfig.RATE
+            content=wave_content,
+            length=len(wave_content) / WaveConfig.RATE
         )
         file_name: str = self.wave_repository.save(wave_model)
         print(MessageConfig.SAVE_WAVE_FILE(file_name))
