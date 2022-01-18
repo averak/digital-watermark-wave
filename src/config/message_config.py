@@ -54,7 +54,7 @@ class MessageConfig:
         return "電子透かしを埋め込むファイルを選択してください。"
 
     @classmethod
-    def INPUT_ERROR(cls) -> str:
+    def VALIDATION_ERROR_OF_INPUT_TEXT(cls) -> str:
         return f"{cls.FontColors.RED}無効な値が入力されました。{cls.FontColors.RESET}"
 
     @classmethod

@@ -96,6 +96,9 @@ class WaveService:
     def steganography(self):
         """
         音声データに電子透かしを埋め込む
+
+        下記ブログを参考にLSB置換法で実装
+        https://tam5917.hatenablog.com/entry/2020/02/07/000644
         """
 
         # ファイル一覧を表示
@@ -120,15 +123,25 @@ class WaveService:
             if (message == ""):
                 raise Exception
         except Exception:
-            print(MessageConfig.INPUT_ERROR())
+            print(MessageConfig.VALIDATION_ERROR_OF_INPUT_TEXT())
             exit(1)
 
-        # 電子透かしを埋め込む
         print("")
         print(MessageConfig.START_STEGANOGRAPHY())
+
+        # メッセージを"{文字数}:{メッセージ}"に加工する
+        # 文字数が不明だと検出できないため
+        message = f"{len(message)}:{message}"
+        # ビット列に変換 (ex. "test" -> "01110100011001010111001101110100")
+        message_bits: str = "".join([format(ord(ch), "#010b") for ch in message]).replace("0b", "")
+
+        # LSB置換法で最下位ビットにメッセージを埋め込む
+        for i, bit in enumerate(message_bits):
+            wave_model.content[i] = wave_model.content[i] & ~1 | int(bit)
+
         print(MessageConfig.COMPLETE_STEGANOGRAPHY())
 
         # ファイルを保存
-        self.wave_repository.save(wave_model)
+        file_name: str = self.wave_repository.save(wave_model)
         print("")
-        print(MessageConfig.SAVE_WAVE_FILE(wave_model.file_name))
+        print(MessageConfig.SAVE_WAVE_FILE(file_name))
