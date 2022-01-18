@@ -21,3 +21,10 @@ class WaveModel(BaseModel):
     """
     音声データ
     """
+
+    # 音声モデルはファイル名を持つべきではないが、
+    # ファイル保存以外のユースケースは考えられないので無視
+    file_name: str = Field(default="")
+    """
+    ファイル名
+    """

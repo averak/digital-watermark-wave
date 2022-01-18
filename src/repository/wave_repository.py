@@ -46,12 +46,15 @@ class WaveRepository:
         """
 
         wave_read = wave_io.open(file_name, 'rb')
-        wave_read.close()
-        return WaveModel(
+        wave_model = WaveModel(
             rate=wave_read.getframerate(),
             length=float(wave_read.getnframes()) / wave_read.getframerate(),
-            content=wave_read.readframes(wave_read.getnframes())
+            content=wave_read.readframes(wave_read.getnframes()),
+            file_name=file_name
         )
+        wave_read.close()
+
+        return wave_model
 
     def save(self, wave: WaveModel) -> str:
         """
