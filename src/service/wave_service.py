@@ -147,7 +147,6 @@ class WaveService:
 
         # ユーザが音声とメッセージを指定する
         # ステガノグラフィで生成されたもの以外はフィルタリング
-        print(MessageConfig.SELECT_WAVE_FILE())
         wave_models = list(filter(lambda wave_model: self.STEGANOGRAPHY_PREFIX in os.path.basename(
             wave_model.file_name), self.wave_repository.get_all()))
         wave_model = self.__user_select_wave_file(wave_models)
@@ -179,6 +178,12 @@ class WaveService:
         print(MessageConfig.DETECT_MESSAGE(message))
 
     def __user_select_wave_file(self, wave_models: list[WaveModel]) -> WaveModel:
+        # 音声データが存在しない場合は終了
+        if wave_models == []:
+            print(MessageConfig.NOT_FOUND_WAVE_DATA())
+            exit(1)
+
+        # ファイルリストを表示
         print(MessageConfig.SELECT_WAVE_FILE())
         for i, wave_model in enumerate(wave_models):
             print(MessageConfig.WAVE_FILE_WITH_INDEX(i, wave_model.file_name))

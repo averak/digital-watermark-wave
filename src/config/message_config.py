@@ -68,3 +68,7 @@ class MessageConfig:
     @classmethod
     def DETECT_MESSAGE(cls, message: str) -> str:
         return f"検出されたメッセージ: {cls.FontColors.GREEN}{message}{cls.FontColors.RESET}"
+
+    @classmethod
+    def NOT_FOUND_WAVE_DATA(cls) -> str:
+        return f"{cls.FontColors.RED}音声データが見つかりません。{cls.FontColors.RESET}"
