@@ -81,7 +81,7 @@ class WaveService:
             length=len(wave_chunks) * WaveConfig.CHUNK / WaveConfig.RATE
         )
         file_name: str = self.wave_repository.save(wave_model)
-        print(MessageConfig.SAVE_RECORDING(file_name))
+        print(MessageConfig.SAVE_WAVE_FILE(file_name))
 
     def clear_all_data(self):
         """
@@ -91,3 +91,43 @@ class WaveService:
 
         self.wave_repository.delete_all()
         print(MessageConfig.CLEAR_ALL_DATA())
+
+    def steganography(self):
+        """
+        音声データに電子透かしを埋め込む
+        """
+
+        # ファイル一覧を表示
+        print(MessageConfig.SELECT_WAVE_FILE_TO_STEGANOGRAPHY())
+        wave_models = self.wave_repository.get_all()
+        for i, wave_model in enumerate(wave_models):
+            print(MessageConfig.WAVE_FILE_WITH_INDEX(i, wave_model.file_name))
+
+        # ユーザが音声とメッセージを指定する
+        try:
+            print("")
+            print(MessageConfig.INPUT_WAVE_FILE_INDEX(0, len(wave_models) - 1), end="")
+            wave_model_index: int = int(input())
+            # インデックスが範囲を超えている場合はエラー
+            if (wave_model_index not in range(len(wave_models))):
+                raise Exception
+            wave_model: WaveModel = wave_models[wave_model_index]
+
+            print(MessageConfig.INPUT_MESSAGE(), end="")
+            message: str = input()
+            # メッセージが空の場合はエラー
+            if (message == ""):
+                raise Exception
+        except Exception:
+            print(MessageConfig.INPUT_ERROR())
+            exit(1)
+
+        # 電子透かしを埋め込む
+        print("")
+        print(MessageConfig.START_STEGANOGRAPHY())
+        print(MessageConfig.COMPLETE_STEGANOGRAPHY())
+
+        # ファイルを保存
+        self.wave_repository.save(wave_model)
+        print("")
+        print(MessageConfig.SAVE_WAVE_FILE(wave_model.file_name))

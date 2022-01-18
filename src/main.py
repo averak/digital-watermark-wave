@@ -10,6 +10,9 @@ wave_service = WaveService(wave_repository)
 # アプリケーションのオプションを定義
 # --helpでヘルプを表示できます
 argument_parser: argparse.ArgumentParser = argparse.ArgumentParser()
+argument_parser.add_argument('-s', '--steganography',
+                             help='ステガノグラフィ',
+                             action='store_true')
 argument_parser.add_argument('-r', '--record',
                              help='音声を録音',
                              action='store_true')
@@ -18,7 +21,9 @@ argument_parser.add_argument('-c', '--clear',
                              action='store_true')
 arguments = argument_parser.parse_args()
 
-if arguments.record:
+if arguments.steganography:
+    wave_service.steganography()
+elif arguments.record:
     wave_service.record_wave()
 elif arguments.clear:
     wave_service.clear_all_data()
