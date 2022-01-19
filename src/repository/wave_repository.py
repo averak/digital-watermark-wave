@@ -71,7 +71,7 @@ class WaveRepository:
         """
         保存するファイル名を生成
 
-        @param wave 音声モデル
+        @param wave_model 音声モデル
         @return ファイル名
         """
 
